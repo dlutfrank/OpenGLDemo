@@ -52,7 +52,7 @@ glSurfaceView.setRenderer(render);
 ```
 
 #### 绘制三角形 (2019.3.5)
-1. 定义形状，一般包含顶点的坐标，颜色信息
+1. 定义形状，包含顶点的坐标，颜色等信息
 
 ```
     // 每个顶点包含的坐标个数
@@ -72,7 +72,7 @@ OpenGL中的坐标系以屏幕中心为原点，向右为x正方向，向左为x
 垂直屏幕向外为z轴正方向。因此左上角的坐标为(-1,1,0)，右下角的坐标为(1,-1,0)。绘制图像的时候使用
 的是逆时针方向绘制。
 
-一般为了提升效率，会将坐标放入ByteBuffer的缓冲区里面
+为了提升效率，会将坐标放入ByteBuffer的缓冲区里面
 
 ```
     private FloatBuffer vertexBuffer;
@@ -119,7 +119,7 @@ public class Triangle {
 ```
 
 `vertexShaderCode`和`fragmentShaderCode`都是OpenGL Shading Language(OGSL)语言，需要先编译，才能使用，
-一般在Render方法里面写一个工具类对shader code进行编译。
+可以在Render方法里面实现一个工具类对shader code进行编译。
 
 ```
 public static int loadShader(int type, String shaderCode){
@@ -210,4 +210,4 @@ public void onDrawFrame(GL10 unused) {
     triangle.draw();
 }
 ```
-#### 绘制四边形
+#### 投影和相机视图 (2019.3.5)
