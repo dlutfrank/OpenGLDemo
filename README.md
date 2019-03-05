@@ -1,6 +1,6 @@
 ### 更新记录
 
-#### 最基础api调用
+#### 最基础api调用 (2019.3.4)
 1. AndroidManifest中声明
 ```xml
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
@@ -51,7 +51,163 @@ glSurfaceView.setEGLContextClientVersion(2);
 glSurfaceView.setRenderer(render);
 ```
 
-#### 绘制三角形
+#### 绘制三角形 (2019.3.5)
+1. 定义形状，一般包含顶点的坐标，颜色信息
 
+```
+    // 每个顶点包含的坐标个数
 
+    static int COORDS_PER_VERTEX = 3;
+    
+    static float coords[] = {
+            0.0f, 0.618f, 0.0f,
+            -0.382f, -0.382f, 0.0f,
+            0.382f, -0.382f, 0.0f,
+    };
+    
+    float color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+```
+
+OpenGL中的坐标系以屏幕中心为原点，向右为x正方向，向左为x负方向。向上为y轴正方向，向下为y轴负方向。
+垂直屏幕向外为z轴正方向。因此左上角的坐标为(-1,1,0)，右下角的坐标为(1,-1,0)。绘制图像的时候使用
+的是逆时针方向绘制。
+
+一般为了提升效率，会将坐标放入ByteBuffer的缓冲区里面
+
+```
+    private FloatBuffer vertexBuffer;
+    
+    public Triangle() {
+        // initialize vertex byte buffer for shape coordinates
+        ByteBuffer bb = ByteBuffer.allocateDirect(
+                // (number of coordinate values * 4 bytes per float)
+                triangleCoords.length * 4);
+        // use the device hardware's native byte order
+        bb.order(ByteOrder.nativeOrder());
+
+        // create a floating point buffer from the ByteBuffer
+        vertexBuffer = bb.asFloatBuffer();
+        // add the coordinates to the FloatBuffer
+        vertexBuffer.put(coords);
+        // set the buffer to read the first coordinate
+        vertexBuffer.position(0);
+    }
+```
+
+2. 绘制形状
+
+绘制形状前，得准备好顶点着色器和片源着色器以及OpenGL es对象
+
+```
+public class Triangle {
+
+    private final String vertexShaderCode =
+        "attribute vec4 vPosition;" +
+        "void main() {" +
+        "  gl_Position = vPosition;" +
+        "}";
+
+    private final String fragmentShaderCode =
+        "precision mediump float;" +
+        "uniform vec4 vColor;" +
+        "void main() {" +
+        "  gl_FragColor = vColor;" +
+        "}";
+
+    ...
+}
+```
+
+`vertexShaderCode`和`fragmentShaderCode`都是OpenGL Shading Language(OGSL)语言，需要先编译，才能使用，
+一般在Render方法里面写一个工具类对shader code进行编译。
+
+```
+public static int loadShader(int type, String shaderCode){
+
+    // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
+    // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+    int shader = GLES20.glCreateShader(type);
+
+    // add the source code to the shader and compile it
+    GLES20.glShaderSource(shader, shaderCode);
+    GLES20.glCompileShader(shader);
+
+    return shader;
+}
+```
+
+为了绘制出图形，需要先编辑shader code，然后和OpenGL es的程序对象链接起来，这些工作都只需要做一遍。
+
+```
+    private final int mProgram;
+
+    public Triangle() {
+        ...
+
+        int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+                                        vertexShaderCode);
+        int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                                        fragmentShaderCode);
+
+        // create empty OpenGL ES Program
+        mProgram = GLES20.glCreateProgram();
+
+        // add the vertex shader to program
+        GLES20.glAttachShader(mProgram, vertexShader);
+
+        // add the fragment shader to program
+        GLES20.glAttachShader(mProgram, fragmentShader);
+
+        // creates OpenGL ES program executables
+        GLES20.glLinkProgram(mProgram);
+    }
+```
+
+针对形状进行绘制
+
+```
+private int positionHandle;
+private int colorHandle;
+
+private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
+private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+
+public void draw() {
+    // Add program to OpenGL ES environment
+    GLES20.glUseProgram(mProgram);
+
+    // get handle to vertex shader's vPosition member
+    positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+
+    // Enable a handle to the triangle vertices
+    GLES20.glEnableVertexAttribArray(positionHandle);
+
+    // Prepare the triangle coordinate data
+    GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
+                                 GLES20.GL_FLOAT, false,
+                                 vertexStride, vertexBuffer);
+
+    // get handle to fragment shader's vColor member
+    colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+
+    // Set color for drawing the triangle
+    GLES20.glUniform4fv(colorHandle, 1, color, 0);
+
+    // Draw the triangle
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+
+    // Disable vertex array
+    GLES20.glDisableVertexAttribArray(positionHandle);
+}
+```
+
+最后在Render的onDrawFrame方法中调用draw方法即可。
+
+```
+public void onDrawFrame(GL10 unused) {
+    ...
+
+    triangle.draw();
+}
+```
 #### 绘制四边形
