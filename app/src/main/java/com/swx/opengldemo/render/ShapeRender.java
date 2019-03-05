@@ -3,6 +3,7 @@ package com.swx.opengldemo.render;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
+import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -16,12 +17,14 @@ import javax.microedition.khronos.opengles.GL10;
 public class ShapeRender implements GLSurfaceView.Renderer {
 
     private Triangle mTriangle;
+    private Square mSquare;
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
         GLES20.glClearColor(1.0f,0.0f,0.0f, 1.0f);
         mTriangle = new Triangle();
+        mSquare = new Square();
     }
 
     @Override
@@ -44,5 +47,6 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         mTriangle.draw();
+//        mSquare.draw();
     }
 }
