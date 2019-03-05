@@ -50,3 +50,8 @@ GLSurfaceView.Renderer render = new ShapeRender();
 glSurfaceView.setEGLContextClientVersion(2);
 glSurfaceView.setRenderer(render);
 ```
+
+#### 绘制三角形
+
+
+#### 绘制四边形

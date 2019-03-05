@@ -22,6 +22,6 @@ public class MainActivity extends AppCompatActivity {
         GLSurfaceView.Renderer render = new ShapeRender();
         glSurfaceView.setEGLContextClientVersion(2);
         glSurfaceView.setRenderer(render);
+        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
-
 }
