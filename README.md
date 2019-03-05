@@ -54,7 +54,7 @@ glSurfaceView.setRenderer(render);
 #### 绘制三角形 (2019.3.5)
 1. 定义形状，包含顶点的坐标，颜色等信息
 
-```
+```java
     // 每个顶点包含的坐标个数
 
     static int COORDS_PER_VERTEX = 3;
@@ -74,7 +74,7 @@ OpenGL中的坐标系以屏幕中心为原点，向右为x正方向，向左为x
 
 为了提升效率，会将坐标放入ByteBuffer的缓冲区里面
 
-```
+```java
     private FloatBuffer vertexBuffer;
     
     public Triangle() {
@@ -98,7 +98,7 @@ OpenGL中的坐标系以屏幕中心为原点，向右为x正方向，向左为x
 
 绘制形状前，得准备好顶点着色器和片源着色器以及OpenGL es对象
 
-```
+```java
 public class Triangle {
 
     private final String vertexShaderCode =
@@ -121,7 +121,7 @@ public class Triangle {
 `vertexShaderCode`和`fragmentShaderCode`都是OpenGL Shading Language(OGSL)语言，需要先编译，才能使用，
 可以在Render方法里面实现一个工具类对shader code进行编译。
 
-```
+```java
 public static int loadShader(int type, String shaderCode){
 
     // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
@@ -138,11 +138,11 @@ public static int loadShader(int type, String shaderCode){
 
 为了绘制出图形，需要先编辑shader code，然后和OpenGL es的程序对象链接起来，这些工作都只需要做一遍。
 
-```
+```java
     private final int mProgram;
 
     public Triangle() {
-        ...
+        // ...
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                                         vertexShaderCode);
@@ -165,7 +165,7 @@ public static int loadShader(int type, String shaderCode){
 
 针对形状进行绘制
 
-```
+```java
 private int positionHandle;
 private int colorHandle;
 
@@ -203,9 +203,9 @@ public void draw() {
 
 最后在Render的onDrawFrame方法中调用draw方法即可。
 
-```
+```java
 public void onDrawFrame(GL10 unused) {
-    ...
+    // ...
 
     triangle.draw();
 }
