@@ -53,11 +53,6 @@ public class Square extends BaseShape {
 
     public Square(float[] coords, float[] color) {
         super(coords, color);
-    }
-
-    public Square(){
-        this(squareCoords, color);
-
         ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
         dlb.order(ByteOrder.nativeOrder());
         drawListBuffer = dlb.asShortBuffer();
@@ -65,6 +60,10 @@ public class Square extends BaseShape {
         drawListBuffer.position(0);
 
         this.prepareShader(vertexShaderCoder, fragmentShaderCoder);
+    }
+
+    public Square(){
+        this(squareCoords, color);
     }
 
     @Override

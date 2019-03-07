@@ -210,4 +210,36 @@ public void onDrawFrame(GL10 unused) {
     triangle.draw();
 }
 ```
+#### 绘制四边形 (2019.3.7)
+Open GL ES中的所有图形都是由点、线、三角形构成，绘制四边形是通过绘制三角形来实现的，所以绘制四边形大部分和绘制三角
+形是一样的。这里仅仅介绍和绘制三角形不一样的地方。
+
+1、定义绘制顺序，左上角为0点，沿逆时针递增
+```java
+    static short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
+```
+
+2、将坐标写入缓冲区
+
+```java
+    private ShortBuffer drawListBuffer;
+
+    public Square(float[] coords, float[] color) {
+        super(coords, color);
+        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(drawOrder);
+        drawListBuffer.position(0);
+
+        // ...
+    }
+```
+
+3、绘制四边形
+
+```java
+    GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+```
+
 #### 投影和相机视图 (2019.3.5)
