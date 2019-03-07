@@ -20,11 +20,14 @@ public class Triangle extends BaseShape {
 
     static float color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
 
+    private int vpMatrixHandle;
+
 
     private final String vertexShaderCoder =
+            "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
                     "void main() {" +
-                    "gl_Position = vPosition;" +
+                    "gl_Position = uMVPMatrix * vPosition;" +
                     "}";
     private final  String fragmentShaderCoder =
             "precision mediump float;" +
@@ -40,6 +43,26 @@ public class Triangle extends BaseShape {
     public Triangle(float[] coords, float[] color) {
         super(coords, color);
         this.prepareShader(vertexShaderCoder, fragmentShaderCoder);
+    }
+
+    public void draw(float[] vpMatrix) {
+        GLES20.glUseProgram(mProgram);
+
+        positionHandler = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        GLES20.glEnableVertexAttribArray(positionHandler);
+
+        GLES20.glVertexAttribPointer(positionHandler, coordsPerVertex,
+                GLES20.GL_FLOAT, false,
+                vertexStride, vertexBuffer);
+
+        colorHandler = GLES20.glGetUniformLocation(mProgram, "vColor");
+        GLES20.glUniform4fv(colorHandler, 1, color, 0);
+
+        vpMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        GLES20.glUniformMatrix4fv(vpMatrixHandle,1,false,vpMatrix,0);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+
+        GLES20.glDisableVertexAttribArray(positionHandler);
     }
 
     @Override
