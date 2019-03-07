@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.swx.opengldemo.databinding.ActivityMainBinding;
 import com.swx.opengldemo.render.ShapeRender;
+import com.swx.opengldemo.view.OnTouchProxy;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,9 +20,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main );
         glSurfaceView = mBinding.glView;
-        GLSurfaceView.Renderer render = new ShapeRender();
+        ShapeRender render = new ShapeRender();
         glSurfaceView.setEGLContextClientVersion(2);
         glSurfaceView.setRenderer(render);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        OnTouchProxy touchProxy = new OnTouchProxy();
+        touchProxy.setRender(render);
+        glSurfaceView.setOnTouchListener(touchProxy);
     }
 }

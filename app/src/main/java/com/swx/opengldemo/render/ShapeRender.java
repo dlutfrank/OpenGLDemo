@@ -26,6 +26,16 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     private final float[] projectionMatrix = new float[16];
     private final float[] rotationMatrix = new float[16];
 
+    public volatile float mAngle;
+
+    public float getAngle(){
+        return mAngle;
+    }
+
+    public void setAngle(float angle){
+        this.mAngle = angle;
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
@@ -62,9 +72,9 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vpMatrix,0,projectionMatrix,0,viewMatrix,0);
         float[] scratch = new float[16];
-        long time = SystemClock.uptimeMillis() % 4000;
-        float angle = 0.090f * ((int)time);
-        Matrix.setRotateM(rotationMatrix, 0, angle, 0,0, -1.0f);
+//        long time = SystemClock.uptimeMillis() % 4000;
+//        float angle = 0.090f * ((int)time);
+        Matrix.setRotateM(rotationMatrix, 0, mAngle, 0,0, -1.0f);
         Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
 //        mSquare.draw();
         mTriangle.draw(scratch);
