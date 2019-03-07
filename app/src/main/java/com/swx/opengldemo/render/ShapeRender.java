@@ -3,6 +3,7 @@ package com.swx.opengldemo.render;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 
 import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
@@ -23,6 +24,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     private final float[] vpMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
+    private final float[] rotationMatrix = new float[16];
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
@@ -59,8 +61,13 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         Matrix.setLookAtM(viewMatrix,0,0,0,-3,0f,0f,0f,0f,1.0f,0.0f);
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vpMatrix,0,projectionMatrix,0,viewMatrix,0);
+        float[] scratch = new float[16];
+        long time = SystemClock.uptimeMillis() % 4000;
+        float angle = 0.090f * ((int)time);
+        Matrix.setRotateM(rotationMatrix, 0, angle, 0,0, -1.0f);
+        Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
 //        mSquare.draw();
-        mTriangle.draw(vpMatrix);
+        mTriangle.draw(scratch);
 //        mTriangle.draw();
     }
 }
