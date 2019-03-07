@@ -55,17 +55,17 @@ glSurfaceView.setRenderer(render);
 1. 定义形状，包含顶点的坐标，颜色等信息
 
 ```java
-    // 每个顶点包含的坐标个数
+// 每个顶点包含的坐标个数
 
-    static int COORDS_PER_VERTEX = 3;
-    
-    static float coords[] = {
-            0.0f, 0.618f, 0.0f,
-            -0.382f, -0.382f, 0.0f,
-            0.382f, -0.382f, 0.0f,
-    };
-    
-    float color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+static int COORDS_PER_VERTEX = 3;
+
+static float coords[] = {
+        0.0f, 0.618f, 0.0f,
+        -0.382f, -0.382f, 0.0f,
+        0.382f, -0.382f, 0.0f,
+};
+
+float color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
 ```
 
 OpenGL中的坐标系以屏幕中心为原点，向右为x正方向，向左为x负方向。向上为y轴正方向，向下为y轴负方向。
@@ -75,23 +75,23 @@ OpenGL中的坐标系以屏幕中心为原点，向右为x正方向，向左为x
 为了提升效率，会将坐标放入ByteBuffer的缓冲区里面
 
 ```java
-    private FloatBuffer vertexBuffer;
-    
-    public Triangle() {
-        // initialize vertex byte buffer for shape coordinates
-        ByteBuffer bb = ByteBuffer.allocateDirect(
-                // (number of coordinate values * 4 bytes per float)
-                triangleCoords.length * 4);
-        // use the device hardware's native byte order
-        bb.order(ByteOrder.nativeOrder());
+private FloatBuffer vertexBuffer;
 
-        // create a floating point buffer from the ByteBuffer
-        vertexBuffer = bb.asFloatBuffer();
-        // add the coordinates to the FloatBuffer
-        vertexBuffer.put(coords);
-        // set the buffer to read the first coordinate
-        vertexBuffer.position(0);
-    }
+public Triangle() {
+    // initialize vertex byte buffer for shape coordinates
+    ByteBuffer bb = ByteBuffer.allocateDirect(
+            // (number of coordinate values * 4 bytes per float)
+            triangleCoords.length * 4);
+    // use the device hardware's native byte order
+    bb.order(ByteOrder.nativeOrder());
+
+    // create a floating point buffer from the ByteBuffer
+    vertexBuffer = bb.asFloatBuffer();
+    // add the coordinates to the FloatBuffer
+    vertexBuffer.put(coords);
+    // set the buffer to read the first coordinate
+    vertexBuffer.position(0);
+}
 ```
 
 2. 绘制形状
@@ -139,28 +139,28 @@ public static int loadShader(int type, String shaderCode){
 为了绘制出图形，需要先编辑shader code，然后和OpenGL es的程序对象链接起来，这些工作都只需要做一遍。
 
 ```java
-    private final int mProgram;
+private final int mProgram;
 
-    public Triangle() {
-        // ...
+public Triangle() {
+    // ...
 
-        int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-                                        vertexShaderCode);
-        int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                                        fragmentShaderCode);
+    int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+                                    vertexShaderCode);
+    int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                                    fragmentShaderCode);
 
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram();
+    // create empty OpenGL ES Program
+    mProgram = GLES20.glCreateProgram();
 
-        // add the vertex shader to program
-        GLES20.glAttachShader(mProgram, vertexShader);
+    // add the vertex shader to program
+    GLES20.glAttachShader(mProgram, vertexShader);
 
-        // add the fragment shader to program
-        GLES20.glAttachShader(mProgram, fragmentShader);
+    // add the fragment shader to program
+    GLES20.glAttachShader(mProgram, fragmentShader);
 
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mProgram);
-    }
+    // creates OpenGL ES program executables
+    GLES20.glLinkProgram(mProgram);
+}
 ```
 
 针对形状进行绘制
