@@ -25,18 +25,30 @@ public class Square extends BaseShape {
 
     static short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
-    private final String vertexShaderCode =
-            "attribute vec4 vPosition;" +
-                    "uniform mat4 vMatrix;"+
-                    "void main() {" +
-                    "  gl_Position = vMatrix*vPosition;" +
-                    "}";
+//    private final String vertexShaderCode =
+//            "attribute vec4 vPosition;" +
+//                    "uniform mat4 vMatrix;"+
+//                    "void main() {" +
+//                    "  gl_Position = vMatrix*vPosition;" +
+//                    "}";
+//
+//    private final String fragmentShaderCode =
+//            "precision mediump float;" +
+//                    "uniform vec4 vColor;" +
+//                    "void main() {" +
+//                    "  gl_FragColor = vColor;" +
+//                    "}";
 
-    private final String fragmentShaderCode =
+    private final String vertexShaderCoder =
+            "attribute vec4 vPosition;" +
+                    "void main() {" +
+                    "gl_Position = vPosition;" +
+                    "}";
+    private final  String fragmentShaderCoder =
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "void main() {" +
-                    "  gl_FragColor = vColor;" +
+                    " gl_FragColor = vColor;" +
                     "}";
 
     public Square(float[] coords, float[] color) {
@@ -52,7 +64,7 @@ public class Square extends BaseShape {
         drawListBuffer.put(drawOrder);
         drawListBuffer.position(0);
 
-        this.prepareShader(vertexShaderCode, fragmentShaderCode);
+        this.prepareShader(vertexShaderCoder, fragmentShaderCoder);
     }
 
     @Override
