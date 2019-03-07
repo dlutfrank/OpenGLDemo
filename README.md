@@ -219,27 +219,28 @@ Open GL ES中的所有图形都是由点、线、三角形构成，绘制四边�
     static short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 ```
 
-2、将坐标写入缓冲区
+2、将绘制顺序写入缓冲区
 
 ```java
-    private ShortBuffer drawListBuffer;
+private ShortBuffer drawListBuffer;
 
-    public Square(float[] coords, float[] color) {
-        super(coords, color);
-        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
-        dlb.order(ByteOrder.nativeOrder());
-        drawListBuffer = dlb.asShortBuffer();
-        drawListBuffer.put(drawOrder);
-        drawListBuffer.position(0);
+public Square(float[] coords, float[] color) {
+    super(coords, color);
+    ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
+    dlb.order(ByteOrder.nativeOrder());
+    drawListBuffer = dlb.asShortBuffer();
+    drawListBuffer.put(drawOrder);
+    drawListBuffer.position(0);
 
-        // ...
-    }
+    // ...
+}
 ```
 
 3、绘制四边形
 
 ```java
-    GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, 
+                      GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 ```
 
-#### 投影和相机视图 (2019.3.5)
+#### 投影和相机视图 (2019.3.7)
