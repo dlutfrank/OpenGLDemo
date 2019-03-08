@@ -114,7 +114,7 @@ public class Triangle {
         "  gl_FragColor = vColor;" +
         "}";
 
-    ...
+    // ...
 }
 ```
 
@@ -244,3 +244,59 @@ GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
 ```
 
 #### 投影和相机视图 (2019.3.7)
+
+##### 投影
+
+使用OpenGl绘制的3D图形，需要展示在移动端2D设备上，这就是投影。Android OpenGl ES中有两种投影方式：一种是正交投影，一种是透视投影：
+
+正交投影投影物体的带下不会随观察点的远近而发生变化，我们可以使用下面方法来执行正交投影：
+
+```java
+Matrix.orthoM (float[] m,           //接收正交投影的变换矩阵
+                int mOffset,        //变换矩阵的起始位置（偏移量）
+                float left,         //相对观察点近面的左边距
+                float right,        //相对观察点近面的右边距
+                float bottom,       //相对观察点近面的下边距
+                float top,          //相对观察点近面的上边距
+                float near,         //相对观察点近面距离
+                float far)          //相对观察点远面距离
+```
+
+透视投影：随观察点的距离变化而变化，观察点越远，视图越小，反之越大，我们可以通过如下方法来设置透视投影：
+
+```java
+Matrix.frustumM (float[] m,         //接收透视投影的变换矩阵
+                int mOffset,        //变换矩阵的起始位置（偏移量）
+                float left,         //相对观察点近面的左边距
+                float right,        //相对观察点近面的右边距
+                float bottom,       //相对观察点近面的下边距
+                float top,          //相对观察点近面的上边距
+                float near,         //相对观察点近面距离
+                float far)          //相对观察点远面距离
+```
+##### 视图
+什么是相机视图？简单来说生活中我们拍照，你站的高度，拿相机的位置，姿势不同，拍出来的照片也就不一样，
+相机视图就是来修改相机位置，观察方式以及相机的倾斜角度等属性。我们可以通过下面方法来修改相机视图属性：
+
+```java
+Matrix.setLookAtM (float[] rm,      //接收相机变换矩阵
+                int rmOffset,       //变换矩阵的起始位置（偏移量）
+                float eyeX,float eyeY, float eyeZ,   //相机位置
+                float centerX,float centerY,float centerZ,  //观察点位置
+                float upX,float upY,float upZ)  //up向量在xyz上的分量
+```
+
+##### 转换矩阵
+
+转换矩阵用来做什么的呢？是否记得上面我们绘制的图形坐标需要转换为OpenGl中能处理的小端字节序（LittleEdian），
+没错，转换矩阵就是用来将数据转为OpenGl ES可用的数据字节，我们将相机视图和投影设置的数据相乘，便得到一个转换矩阵，
+然后我们再讲此矩阵传给顶点着色器，具体使用方法及参数说明如下：
+
+```java
+Matrix.multiplyMM (float[] result, //接收相乘结果
+                int resultOffset,  //接收矩阵的起始位置（偏移量）
+                float[] lhs,       //左矩阵
+                int lhsOffset,     //左矩阵的起始位置（偏移量）
+                float[] rhs,       //右矩阵
+                int rhsOffset)     //右矩阵的起始位置（偏移量）
+```
