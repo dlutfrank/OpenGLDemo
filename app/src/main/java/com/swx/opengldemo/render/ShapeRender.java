@@ -47,10 +47,12 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
         GLES20.glViewport(0,0,width,height);
-        float ratio = (float) height / width;
+        float ratio = (float) width / height;
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
         Matrix.frustumM(projectionMatrix,0,-ratio,ratio,-1,1,3,7);
+        Matrix.setLookAtM(viewMatrix,0,0,0,-3,0f,0f,0f,0f,1.0f,0.0f);
+        Matrix.multiplyMM(vpMatrix,0,projectionMatrix,0,viewMatrix,0);
     }
 
     public static  int loadShader(int type, String shaderCode) {
@@ -68,9 +70,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix,0,0,0,-3,0f,0f,0f,0f,1.0f,0.0f);
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(vpMatrix,0,projectionMatrix,0,viewMatrix,0);
         float[] scratch = new float[16];
 //        long time = SystemClock.uptimeMillis() % 4000;
 //        float angle = 0.090f * ((int)time);
