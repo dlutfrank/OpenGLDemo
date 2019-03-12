@@ -68,6 +68,10 @@ public class Square extends BaseShape {
         this(defaultSquareCoords, defaultColor);
     }
 
+    public Square(String vertexShader, String fragmentShader){
+        this(defaultSquareCoords, defaultColor, vertexShader, fragmentShader);
+    }
+
     @Override
     public void draw() {
         GLES20.glUseProgram(mProgram);

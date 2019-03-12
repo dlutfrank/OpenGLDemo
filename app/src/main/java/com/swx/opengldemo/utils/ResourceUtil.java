@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  * Copyright (c) 2019 .
  */
 public class ResourceUtil {
-    public static String loadFile(Context context, String path){
+    public static String loadAssertFile(Context context, String path){
         StringBuilder sb = new StringBuilder();
         try {
             InputStream is = context.getAssets().open(path);

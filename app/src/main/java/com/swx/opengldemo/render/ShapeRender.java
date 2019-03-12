@@ -8,6 +8,7 @@ import android.os.SystemClock;
 
 import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
+import com.swx.opengldemo.utils.ResourceUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -52,8 +53,16 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
         // GLES20.glClearColor(1.0f,0.0f,0.0f, 1.0f);
+
         mTriangle = new Triangle();
-        mSquare = new Square();
+        if(contextRef == null || contextRef.get() == null){
+            mSquare = new Square();
+        }else{
+            Context context = contextRef.get();
+            String vertex = ResourceUtil.loadAssertFile(context,"shader/square.vert");
+            String fragment = ResourceUtil.loadAssertFile(context, "shader/square.frag");
+            mSquare = new Square(vertex, fragment);
+        }
     }
 
     @Override
