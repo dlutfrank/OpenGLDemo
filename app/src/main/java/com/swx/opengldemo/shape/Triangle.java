@@ -2,8 +2,6 @@ package com.swx.opengldemo.shape;
 
 import android.opengl.GLES20;
 
-import com.swx.opengldemo.render.ShapeRender;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -16,7 +14,7 @@ import java.nio.FloatBuffer;
  */
 public class Triangle extends BaseShape {
 
-    static float coords[] = {
+    static float defaultCoords[] = {
             0.0f, 0.618f, 0.0f,
             -0.382f, -0.382f, 0.0f,
             0.382f, -0.382f, 0.0f,
@@ -24,7 +22,7 @@ public class Triangle extends BaseShape {
 
 //    static float color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
 
-    static float[] color =
+    static float[] defaultColor =
                    {0.0f, 1.0f, 0.0f, 1.0f,
                     1.0f,0.0f,0.0f,1.0f,
                     0.0f,0.0f,1.0f,1.0f};
@@ -37,7 +35,9 @@ public class Triangle extends BaseShape {
 // uniform一般用于对同一组顶点组成的3D物体中各个顶点都相同的量。
 // varying一般用于从顶点着色器传入到片元着色器的量。
 
-    private final String vertexShaderCoder =
+    // 这里是通过顶点着色器修改的片元着色器颜色，也可以直接修改片元着色器颜色
+
+    private static String defaultVertexShaderCoder =
             "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
             "varying vec4 vColor;"+
@@ -46,7 +46,7 @@ public class Triangle extends BaseShape {
             "gl_Position = uMVPMatrix * vPosition;" +
             "vColor=aColor;"+
             "}";
-    private final  String fragmentShaderCoder =
+    private static String defaultFragmentShaderCoder =
             "precision mediump float;" +
             "varying vec4 vColor;" +
             "void main() {" +
@@ -54,17 +54,16 @@ public class Triangle extends BaseShape {
             "}";
 
     public Triangle() {
-        this(coords, color);
+        this(defaultCoords, defaultColor, defaultVertexShaderCoder, defaultFragmentShaderCoder);
     }
 
-    public Triangle(float[] coords, float[] color) {
-        super(coords, color);
+    public Triangle(float[] coords, float[] color, String vertexShader, String fragmentShader) {
+        super(coords, color, vertexShader, fragmentShader);
         ByteBuffer bb = ByteBuffer.allocateDirect(color.length * 4);
         bb.order(ByteOrder.nativeOrder());
         colorBuffer = bb.asFloatBuffer();
         colorBuffer.put(color);
         colorBuffer.position(0);
-        this.prepareShader(vertexShaderCoder, fragmentShaderCoder);
     }
 
     public void draw(float[] vpMatrix) {

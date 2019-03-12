@@ -15,13 +15,13 @@ public class Square extends BaseShape {
 
     private ShortBuffer drawListBuffer;
 
-    static float squareCoords[] = {
+    static float defaultSquareCoords[] = {
             -0.5f,  0.5f, 0.0f,   // top left
             -0.5f, -0.5f, 0.0f,   // bottom left
             0.5f, -0.5f, 0.0f,   // bottom right
             0.5f,  0.5f, 0.0f }; // top right
 
-    static float color[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+    static float[] defaultColor = { 0.0f, 0.0f, 1.0f, 1.0f };
 
     static short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
@@ -39,31 +39,33 @@ public class Square extends BaseShape {
 //                    "  gl_FragColor = vColor;" +
 //                    "}";
 
-    private final String vertexShaderCoder =
+    private static String defaultVertexShaderCoder =
             "attribute vec4 vPosition;" +
                     "void main() {" +
                     "gl_Position = vPosition;" +
                     "}";
-    private final  String fragmentShaderCoder =
+    private static String defaultFragmentShaderCoder =
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "void main() {" +
                     " gl_FragColor = vColor;" +
                     "}";
 
-    public Square(float[] coords, float[] color) {
-        super(coords, color);
+    public Square(float[] coords, float[] color, String vertexShader, String fragmentShader){
+        super(coords, color,vertexShader, fragmentShader);
         ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
         dlb.order(ByteOrder.nativeOrder());
         drawListBuffer = dlb.asShortBuffer();
         drawListBuffer.put(drawOrder);
         drawListBuffer.position(0);
+    }
 
-        this.prepareShader(vertexShaderCoder, fragmentShaderCoder);
+    public Square(float[] coords, float[] color) {
+        this(coords, color, defaultVertexShaderCoder, defaultFragmentShaderCoder);
     }
 
     public Square(){
-        this(squareCoords, color);
+        this(defaultSquareCoords, defaultColor);
     }
 
     @Override

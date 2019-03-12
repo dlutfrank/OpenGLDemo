@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main );
         glSurfaceView = mBinding.glView;
-        ShapeRender render = new ShapeRender();
+        ShapeRender render = new ShapeRender(this);
         glSurfaceView.setEGLContextClientVersion(2);
         glSurfaceView.setRenderer(render);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);

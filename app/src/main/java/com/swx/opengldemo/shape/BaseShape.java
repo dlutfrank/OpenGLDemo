@@ -25,6 +25,10 @@ public abstract class BaseShape implements Drawable{
 
     protected final float[] coords;
     protected final float[] color;
+
+    protected final String vertexShaderCoder;
+    protected final String fragmentShaderCoder;
+
     // 每个顶点的坐标个数
 
     protected final int coordsPerVertex;
@@ -35,14 +39,16 @@ public abstract class BaseShape implements Drawable{
 
     protected final int vertexStride;
 
-    BaseShape(float[] coords, float[] color) {
-        this(coords, color, COORDS_PER_VERTEX);
+    BaseShape(float[] coords, float[] color, String vertexShader, String fragmentShader) {
+        this(coords, color, COORDS_PER_VERTEX, vertexShader, fragmentShader);
     }
 
 
-    BaseShape(float[] coords, float[] color, int coordsPerVertex) {
+    BaseShape(float[] coords, float[] color, int coordsPerVertex, String vertexShader, String fragmentShader) {
         this.coords = coords;
         this.color = color;
+        this.vertexShaderCoder = vertexShader;
+        this.fragmentShaderCoder = fragmentShader;
         this.coordsPerVertex = coordsPerVertex;
         this.vertexCount = this.coords.length / this.coordsPerVertex;
         this.vertexStride = this.coordsPerVertex * 4;
@@ -53,9 +59,10 @@ public abstract class BaseShape implements Drawable{
         vertexBuffer = bb.asFloatBuffer();
         vertexBuffer.put(coords);
         vertexBuffer.position(0);
+        this.prepareShader(vertexShaderCoder, fragmentShaderCoder);
     }
 
-    final void prepareShader(String vertexShaderCoder, String fragmentShaderCoder) {
+    private void prepareShader(String vertexShaderCoder, String fragmentShaderCoder) {
         int vertexShader = ShapeRender.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCoder);
         int fragmentShader = ShapeRender.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCoder);
         GLES20.glAttachShader(mProgram, vertexShader);

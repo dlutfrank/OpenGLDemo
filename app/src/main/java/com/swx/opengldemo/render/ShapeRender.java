@@ -1,5 +1,6 @@
 package com.swx.opengldemo.render;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -7,6 +8,8 @@ import android.os.SystemClock;
 
 import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
+
+import java.lang.ref.WeakReference;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,7 +23,9 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 
     private Triangle mTriangle;
     private Square mSquare;
+    private WeakReference<Context> contextRef = null;
     // vpMatrix is an abbreviation for "Model View Projection Matrix"
+
     private final float[] vpMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
@@ -36,10 +41,17 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         this.mAngle = angle;
     }
 
+    public ShapeRender(Context context){
+        if(contextRef != null){
+            contextRef.clear();
+        }
+        contextRef = new WeakReference<>(context);
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
-//        GLES20.glClearColor(1.0f,0.0f,0.0f, 1.0f);
+        // GLES20.glClearColor(1.0f,0.0f,0.0f, 1.0f);
         mTriangle = new Triangle();
         mSquare = new Square();
     }
@@ -76,8 +88,8 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 //        float angle = 0.090f * ((int)time);
         Matrix.setRotateM(rotationMatrix, 0, mAngle, 0,0, -1.0f);
         Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
-//        mSquare.draw();
-        mTriangle.draw(scratch);
+        mSquare.draw();
+//        mTriangle.draw(scratch);
 //        mTriangle.draw();
     }
 }
