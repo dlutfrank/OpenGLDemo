@@ -66,11 +66,14 @@ public class Triangle extends BaseShape {
         colorBuffer.position(0);
     }
 
+    @Override
     public void draw(float[] vpMatrix) {
         GLES20.glUseProgram(mProgram);
 
-        vpMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        GLES20.glUniformMatrix4fv(vpMatrixHandle,1,false,vpMatrix,0);
+        if(vpMatrix != null && vpMatrix.length > 0){
+            vpMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+            GLES20.glUniformMatrix4fv(vpMatrixHandle,1,false,vpMatrix,0);
+        }
 
         positionHandler = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandler);
@@ -87,30 +90,13 @@ public class Triangle extends BaseShape {
                 GLES20.GL_FLOAT, false,
                 0, colorBuffer);
 
+        // get handle to fragment shader's vColor member
+//        colorHandler = GLES20.glGetUniformLocation(mProgram, "vColor");
+        // Set color for drawing the triangle
+//        GLES20.glUniform4fv(colorHandler, 1, color, 0);
+
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
 
         GLES20.glDisableVertexAttribArray(positionHandler);
     }
-
-    @Override
-    public void draw() {
-        GLES20.glUseProgram(mProgram);
-
-        positionHandler = GLES20.glGetAttribLocation(mProgram, "vPosition");
-        GLES20.glEnableVertexAttribArray(positionHandler);
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(positionHandler, coordsPerVertex,
-                GLES20.GL_FLOAT, false,
-                vertexStride, vertexBuffer);
-
-        // get handle to fragment shader's vColor member
-        colorHandler = GLES20.glGetUniformLocation(mProgram, "vColor");
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(colorHandler, 1, color, 0);
-        // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0, vertexCount);
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandler);
-    }
-
 }

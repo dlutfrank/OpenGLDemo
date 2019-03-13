@@ -14,6 +14,7 @@ import java.nio.ShortBuffer;
 public class Square extends BaseShape {
 
     private ShortBuffer drawListBuffer;
+    private int matrixHandler;
 
     static float defaultSquareCoords[] = {
             -0.5f,  0.5f, 0.0f,   // top left
@@ -73,8 +74,13 @@ public class Square extends BaseShape {
     }
 
     @Override
-    public void draw() {
+    public void draw(float[] vpMatrix) {
         GLES20.glUseProgram(mProgram);
+
+        if(vpMatrix != null && vpMatrix.length > 0){
+            matrixHandler = GLES20.glGetUniformLocation(mProgram,"vpMatrix");
+            GLES20.glUniformMatrix4fv(matrixHandler,1,false, vpMatrix, 0);
+        }
 
         positionHandler = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandler);

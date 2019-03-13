@@ -52,7 +52,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
-        // GLES20.glClearColor(1.0f,0.0f,0.0f, 1.0f);
+         GLES20.glClearColor(0.0f,0.0f,0.0f, 1.0f);
 
         mTriangle = new Triangle();
         if(contextRef == null || contextRef.get() == null){
@@ -72,6 +72,8 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
         Matrix.frustumM(projectionMatrix,0,-ratio,ratio,-1,1,3,7);
+//        Matrix.frustumM(projectionMatrix,0,-1,1,-ratio,ratio,3,7);
+//        Matrix.frustumM(projectionMatrix,0,-1,1,-1,1,3,7);
         Matrix.setLookAtM(viewMatrix,0,0,0,-3,0f,0f,0f,0f,1.0f,0.0f);
         Matrix.multiplyMM(vpMatrix,0,projectionMatrix,0,viewMatrix,0);
     }
@@ -97,8 +99,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 //        float angle = 0.090f * ((int)time);
         Matrix.setRotateM(rotationMatrix, 0, mAngle, 0,0, -1.0f);
         Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
-        mSquare.draw();
-//        mTriangle.draw(scratch);
-//        mTriangle.draw();
+//        mSquare.draw(scratch);
+        mTriangle.draw(scratch);
     }
 }

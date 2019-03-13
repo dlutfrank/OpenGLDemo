@@ -6,5 +6,5 @@ package com.swx.opengldemo.shape;
  * Copyright (c) 2019 .
  */
 public interface Drawable {
-    void draw();
+    void draw(float[] vpMatrix);
 }
