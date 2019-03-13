@@ -57,7 +57,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
-//         GLES20.glClearColor(1.0f,1.0f,1.0f, 1.0f);
+         GLES20.glClearColor(0.5f,0.5f,0.5f, 0.5f);
         mTriangle = new Triangle();
         if(contextRef == null || contextRef.get() == null){
             mSquare = new Square();
