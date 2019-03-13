@@ -4,12 +4,13 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.os.SystemClock;
 import android.util.Log;
 
+import com.swx.opengldemo.shape.Circle;
 import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
 import com.swx.opengldemo.utils.ResourceUtil;
+import com.swx.opengldemo.utils.ShapeUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -25,6 +26,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 
     private Triangle mTriangle;
     private Square mSquare;
+    private Circle mCircle;
     private WeakReference<Context> contextRef = null;
     // vpMatrix is an abbreviation for "Model View Projection Matrix"
 
@@ -32,6 +34,8 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] rotationMatrix = new float[16];
+
+    private final float[] defaultColor = {1.0f,1.0f,1.0f,1.0f};
 
     public volatile float mAngle;
 
@@ -53,8 +57,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         // Set the background frame color
-         GLES20.glClearColor(0.0f,0.0f,0.0f, 1.0f);
-
+//         GLES20.glClearColor(1.0f,1.0f,1.0f, 1.0f);
         mTriangle = new Triangle();
         if(contextRef == null || contextRef.get() == null){
             mSquare = new Square();
@@ -63,11 +66,16 @@ public class ShapeRender implements GLSurfaceView.Renderer {
             String vertex = ResourceUtil.loadAssertFile(context,"shader/square.vert");
             String fragment = ResourceUtil.loadAssertFile(context, "shader/square.frag");
             mSquare = new Square(vertex, fragment);
+            float[] circleVertexs = ShapeUtil.createShape(0.5f,0, 8);
+            String circleVertex = ResourceUtil.loadAssertFile(context,"shader/square.vert");
+            String cirCleFragment = ResourceUtil.loadAssertFile(context, "shader/square.frag");
+            mCircle = new Circle(circleVertexs, defaultColor, circleVertex, cirCleFragment );
         }
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
+
         GLES20.glViewport(0,0,width,height);
         float ratio = (float) width / height;
         // this projection matrix is applied to object coordinates
@@ -105,7 +113,10 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 //        float angle = 0.090f * ((int)time);
         Matrix.setRotateM(rotationMatrix, 0, mAngle, 0,0, -1.0f);
         Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
-        mSquare.draw(scratch);
+//        mSquare.draw(scratch);
 //        mTriangle.draw(scratch);
+        if(mCircle != null){
+            mCircle.draw(scratch);
+        }
     }
 }
