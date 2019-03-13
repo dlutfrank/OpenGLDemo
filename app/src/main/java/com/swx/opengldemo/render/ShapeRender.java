@@ -99,7 +99,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 //        float angle = 0.090f * ((int)time);
         Matrix.setRotateM(rotationMatrix, 0, mAngle, 0,0, -1.0f);
         Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
-//        mSquare.draw(scratch);
-        mTriangle.draw(scratch);
+        mSquare.draw(scratch);
+//        mTriangle.draw(scratch);
     }
 }
