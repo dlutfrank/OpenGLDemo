@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
@@ -71,7 +72,12 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         float ratio = (float) width / height;
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
-        Matrix.frustumM(projectionMatrix,0,-ratio,ratio,-1,1,3,7);
+        Log.d("ShapeRender", "onSurfaceChanged: width: " + width + ", height: "+height );
+        if(width > height) {
+            Matrix.frustumM(projectionMatrix,0,-ratio,ratio,-1,1,3,7);
+        }else{
+            Matrix.frustumM(projectionMatrix,0,-1,1 ,-1/ratio,1/ratio,3,7);
+        }
 //        Matrix.frustumM(projectionMatrix,0,-1,1,-ratio,ratio,3,7);
 //        Matrix.frustumM(projectionMatrix,0,-1,1,-1,1,3,7);
         Matrix.setLookAtM(viewMatrix,0,0,0,-3,0f,0f,0f,0f,1.0f,0.0f);
