@@ -24,7 +24,7 @@ public class ShapeUtil {
         for(; i < count * 3; i+=3){
             result[i] = (float) (radius * Math.sin(arcs));
             result[i+1] = (float)(radius * Math.cos(arcs));
-            result[i+2] = h;
+            result[i+2] = 0.0f;
             arcs += arc;
         }
         return result;

@@ -7,6 +7,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.swx.opengldemo.shape.Circle;
+import com.swx.opengldemo.shape.Cone;
 import com.swx.opengldemo.shape.Square;
 import com.swx.opengldemo.shape.Triangle;
 import com.swx.opengldemo.utils.ResourceUtil;
@@ -27,6 +28,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     private Triangle mTriangle;
     private Square mSquare;
     private Circle mCircle;
+    private Cone mCone;
     private WeakReference<Context> contextRef = null;
     // vpMatrix is an abbreviation for "Model View Projection Matrix"
 
@@ -36,6 +38,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     private final float[] rotationMatrix = new float[16];
 
     private final float[] defaultColor = {1.0f,1.0f,1.0f,1.0f};
+    private final int EDGE_COUNT = 360;
 
     public volatile float mAngle;
 
@@ -66,10 +69,16 @@ public class ShapeRender implements GLSurfaceView.Renderer {
             String vertex = ResourceUtil.loadAssertFile(context,"shader/square.vert");
             String fragment = ResourceUtil.loadAssertFile(context, "shader/square.frag");
             mSquare = new Square(vertex, fragment);
-            float[] circleVertexs = ShapeUtil.createShape(0.5f,0, 8);
+
+            float[] circleVertexs = ShapeUtil.createShape(0.5f,0, EDGE_COUNT);
             String circleVertex = ResourceUtil.loadAssertFile(context,"shader/square.vert");
             String cirCleFragment = ResourceUtil.loadAssertFile(context, "shader/square.frag");
             mCircle = new Circle(circleVertexs, defaultColor, circleVertex, cirCleFragment );
+
+            float[] coneVertexs = ShapeUtil.createShape(0.5f,1.0f, EDGE_COUNT);
+            String coneVertex = ResourceUtil.loadAssertFile(context,"shader/cone.vert");
+            String coneFragment = ResourceUtil.loadAssertFile(context, "shader/cone.frag");
+            mCone = new Cone(coneVertexs, null, coneVertex, coneFragment );
         }
     }
 
@@ -82,13 +91,14 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         // in the onDrawFrame() method
         Log.d("ShapeRender", "onSurfaceChanged: width: " + width + ", height: "+height );
         if(width > height) {
-            Matrix.frustumM(projectionMatrix,0,-ratio,ratio,-1,1,3,7);
+            Matrix.frustumM(projectionMatrix,0,-ratio,ratio,-1,1,3,20);
         }else{
-            Matrix.frustumM(projectionMatrix,0,-1,1 ,-1/ratio,1/ratio,3,7);
+            Matrix.frustumM(projectionMatrix,0,-1,1 ,-1/ratio,1/ratio,3,20);
         }
 //        Matrix.frustumM(projectionMatrix,0,-1,1,-ratio,ratio,3,7);
 //        Matrix.frustumM(projectionMatrix,0,-1,1,-1,1,3,7);
         Matrix.setLookAtM(viewMatrix,0,0,0,-3,0f,0f,0f,0f,1.0f,0.0f);
+//        Matrix.setLookAtM(viewMatrix, 0, 1.0f, -10.0f, -4.0f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.multiplyMM(vpMatrix,0,projectionMatrix,0,viewMatrix,0);
     }
 
@@ -117,6 +127,9 @@ public class ShapeRender implements GLSurfaceView.Renderer {
 //        mTriangle.draw(scratch);
         if(mCircle != null){
             mCircle.draw(scratch);
+        }
+        if(mCone != null){
+            mCone.draw(scratch);
         }
     }
 }
