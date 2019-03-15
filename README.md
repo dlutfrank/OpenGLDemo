@@ -300,3 +300,64 @@ Matrix.multiplyMM (float[] result, //接收相乘结果
                 float[] rhs,       //右矩阵
                 int rhsOffset)     //右矩阵的起始位置（偏移量）
 ```
+
+#### 绘制圆形
+
+[cicle](https://img-blog.csdn.net/20161014185118697)
+
+圆形可以理解为正多边形，当边的数量足够多的时候，看上去就是圆形了，这里需要介绍一下绘制方式，OpenGL里面绘制一般是通过
+glDrawArrays来进行绘制的,绘制连续的三角形为:
+
+```java
+GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, vertexCoords.length/3);
+
+```
+
+GLES20.glDrawArrays绘制的方法称为顶点法，还有一个方法进行绘制，称为索引法，是根据索引序列，在顶点序列中找到对应的
+顶点，并根据绘制的方式，组成相应的图元进行绘制。
+
+
+顶点法拥有的绘制方式，索引法也都有。相对于顶点法在复杂图形的绘制中无法避免大量顶点重复的情况，索引法可以相对顶点法减
+少很多重复顶点占用的空间。
+
+GL_TRIANGLE_FAN代表以第一个顶点进行扇面绘制，其他类型的绘制含义如下：
+
+```java
+int GL_POINTS       //将传入的顶点坐标作为单独的点绘制
+int GL_LINES        //将传入的坐标作为单独线条绘制，ABCDEFG六个顶点，绘制AB、CD、EF三条线
+int GL_LINE_STRIP   //将传入的顶点作为折线绘制，ABCD四个顶点，绘制AB、BC、CD三条线
+int GL_LINE_LOOP    //将传入的顶点作为闭合折线绘制，ABCD四个顶点，绘制AB、BC、CD、DA四条线。
+int GL_TRIANGLES    //将传入的顶点作为单独的三角形绘制，ABCDEF绘制ABC,DEF两个三角形
+int GL_TRIANGLE_FAN    //将传入的顶点作为扇面绘制，ABCDEF绘制ABC、ACD、ADE、AEF四个三角形
+int GL_TRIANGLE_STRIP   //将传入的顶点作为三角条带绘制，ABCDEF绘制ABC,BCD,CDE,DEF四个三角形
+```
+
+生成顶点坐标：
+
+```java
+    public static final int CPV = 3;
+    public static float[] createShape(float radius, float h, int n){
+        if(n <= 0){
+            throw new InvalidParameterException("n is invalid");
+        }
+        // 中心点 + 最后的重合点
+        final int count = n + 2;
+        float[] result = new float[count*3];
+        int i;
+        for(i = 0; i < CPV; i++){
+            result[i] = 0.0f;
+        }
+        result[2] = h;
+        double arc = 2.0*Math.PI /n;
+        double arcs = 0.0f;
+        for(; i < count * CPV; i+=3){
+            result[i] = (float) (radius * Math.sin(arcs));
+            result[i+1] = (float)(radius * Math.cos(arcs));
+            result[i+2] = h;
+            arcs += arc;
+        }
+        return result;
+    }
+```
+生成顶点坐标的时候，中心点的x,y坐标为0，z轴坐标等于高度，其他点的坐标根据角度求出对应的值即可。
+
