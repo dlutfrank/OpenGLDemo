@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.swx.opengldemo.shape.Ball;
 import com.swx.opengldemo.shape.Circle;
 import com.swx.opengldemo.shape.Cone;
 import com.swx.opengldemo.shape.Cylinder;
@@ -32,6 +33,7 @@ public class ShapeRender implements GLSurfaceView.Renderer {
     private Cone mCone;
     private Circle topCircle;
     private Cylinder mCylinder;
+    private Ball mBall;
     private WeakReference<Context> contextRef = null;
     // vpMatrix is an abbreviation for "Model View Projection Matrix"
 
@@ -94,6 +96,11 @@ public class ShapeRender implements GLSurfaceView.Renderer {
             String cylinderVertex = ResourceUtil.loadAssertFile(context,"shader/cone.vert");
             String cylinderFragment = ResourceUtil.loadAssertFile(context, "shader/cone.frag");
             mCylinder = new Cylinder(cylinderVertexs,null, cylinderVertex,cylinderFragment);
+
+            String ballVertex = ResourceUtil.loadAssertFile(context,"shader/ball.vert");
+            String ballFragment = ResourceUtil.loadAssertFile(context, "shader/ball.frag");
+            float[] ballVertexs = ShapeUtil.createBall(defaultRadius, EDGE_COUNT);
+            mBall = new Ball(ballVertexs, null, ballVertex, ballFragment);
         }
     }
 
@@ -141,17 +148,20 @@ public class ShapeRender implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch,0, vpMatrix, 0, rotationMatrix,0);
 //        mSquare.draw(scratch);
 //        mTriangle.draw(scratch);
-        if(mCircle != null){
-            mCircle.draw(scratch);
-        }
+//        if(mCircle != null){
+//            mCircle.draw(scratch);
+//        }
 //        if(topCircle != null){
 //            topCircle.draw(scratch);
 //        }
 //        if(mCylinder != null){
 //            mCylinder.draw(scratch);
 //        }
-        if(mCone != null){
-            mCone.draw(scratch);
+//        if(mCone != null){
+//            mCone.draw(scratch);
+//        }
+        if(mBall != null){
+            mBall.draw(scratch);
         }
     }
 }
