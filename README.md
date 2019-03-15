@@ -361,3 +361,88 @@ int GL_TRIANGLE_STRIP   //将传入的顶点作为三角条带绘制，ABCDEF绘
 ```
 生成顶点坐标的时候，中心点的x,y坐标为0，z轴坐标等于高度，其他点的坐标根据角度求出对应的值即可。
 
+#### 圆锥、圆柱
+圆锥的锥面同绘制圆形，圆锥的椎体也可以参考圆形的绘制，除了顶点的坐标不在圆上之外，x,y方向的坐标和圆的坐标相同，因此创
+见圆锥体顶点坐标的公式为：
+
+```java
+    public static float[] createCone(float radius, float h, int n){
+        if(n <= 0){
+            throw new InvalidParameterException("n is invalid");
+        }
+        // 中心点 + 最后的重合点
+        final int count = n + 2;
+        float[] result = new float[count*3];
+        int i;
+        for(i = 0; i < CPV; i++){
+            result[i] = 0.0f;
+        }
+        result[2] = h;
+        double arc = 2.0*Math.PI /n;
+        double arcs = 0.0f;
+        for(; i < count * CPV; i+=3){
+            result[i] = (float) (radius * Math.sin(arcs));
+            result[i+1] = (float)(radius * Math.cos(arcs));
+            result[i+2] = 0.0f;
+            arcs += arc;
+        }
+        return result;
+    }
+```
+
+绘制圆锥体的时候，绘制类型同圆形一样，为GL_TRIANGLE_FAN，绘制了后，由于色彩和深度的原因，可能会看不出来是圆锥，需要
+设置锥体的颜色以及开启深度测试。
+
+开启深度测试
+
+```java
+    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        // Set the background frame color
+        GLES20.glClearColor(0.5f,0.5f,0.5f, 0.5f);
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        ...
+    }
+    
+   public void onDrawFrame(GL10 gl10) {
+        // Redraw background color
+//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
+        ...
+    }
+    
+```
+深度的概念类似于游戏编程里面zOrder，控制物体显示的关系，深度相同的情况下，后添加的view会显示在最前面，有可能会遮挡前
+面添加的view，修改深度可以控制显示的顺序。开启深度测试后，不要忘记在每次绘制之前擦除深度相关的数据。
+
+给锥体添加颜色的时候，一般通过顶点坐标向片元传递颜色。
+
+顶点着色器
+```glsl
+uniform mat4 vpMatrix;
+attribute vec4 vPosition;
+varying vec4 vColor;
+void main() {
+    gl_Position = vpMatrix*vPosition;
+    if(vPosition.z > 0.2){
+        vColor=vec4(0.0,0.0,0.0,1.0);
+    }else{
+        vColor=vec4(0.9,0.9,0.9,1.0);
+    }
+}
+```
+
+片元着色器
+```glsl
+precision mediump float;
+varying vec4 vColor;
+void main() {
+    gl_FragColor = vColor;
+}
+```
+
+片元着色器定义的时候，需要定义精度，一共有lowp（8位）、medump（10位）、highp（16位）三种可选，varying变量代表从
+顶点传递数据到片元。attribute表示可变的变量，uniform表示不可变变量。mat4代表4*4的矩阵，vec4代表4个元素的列向量。
+
+gl_Position: 为顶点坐标，gl_FragColor代表当前片元颜色。
+
+#### 球
