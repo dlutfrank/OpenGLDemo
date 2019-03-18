@@ -447,6 +447,20 @@ gl_Position: 为顶点坐标，gl_FragColor代表当前片元颜色。
 
 #### 球
 
+球上坐标点的生成会更复杂点，可以根据球面坐标系的公式进行计算，OpenGL的坐标系为右手坐标系：
+
+![ball_coord](images/ball_coord.jpg)
+
+
+如图所示：$\theta$为圆心到点的向量与z轴正方向的夹角，$\phi$为圆心到点的向量在xoy平
+面上的投影与x轴正方向的夹角。可以点(x,y,z)的坐标计算公式为：
+
+```
+x = r * sin(\theta) * cos(\phi)
+y = r * sin(\theta) * sin(\phi)
+z = r * cos(\theta)
+```
+
 顶点的生成
 
 ```java
@@ -491,3 +505,25 @@ gl_Position: 为顶点坐标，gl_FragColor代表当前片元颜色。
         return result;
     }
 ```
+
+生成球后，需要对球体的颜色做一些修改，以便看上去真正的像一个球：
+
+```glsl
+uniform mat4 vpMatrix;
+attribute vec4 vPosition;
+varying vec4 vColor;
+void main() {
+    gl_Position = vpMatrix*vPosition;
+    float color;
+    if(vPosition.z > 0.0){
+        color=vPosition.z;
+    }else{
+        color=-vPosition.z;
+    }
+    vColor=vec4(color,color,color,1.0);
+}
+```
+
+最终的效果图为：
+
+![ball](images/ball.png)
